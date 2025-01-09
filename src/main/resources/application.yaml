@@ -1,0 +1,9 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: chatBackend
+
+config:
+  apiKey: ${baiduERNIE_KEY}
+  secretKey: ${baiduERNIE_SECRET}
