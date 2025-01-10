@@ -60,6 +60,7 @@ public class ChatPigZhuzhuleBackendApplication {
                 "        \n" +
                 "    ]\n" +
                 "}");
+
         String accecssToken = this.getAccessToken();
         Request requestToApi = new Request.Builder()
                 .url("https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions_pro?access_token=" + accecssToken)
