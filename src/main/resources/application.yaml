@@ -4,6 +4,12 @@ spring:
   application:
     name: chatBackend
 
+wxlogin:
+  app-id: ${wx_test_id}
+  app-secret: ${wx_test_secret}
+  api-prefix: /wxlogin
+  verify-path: /wxverify
+
 config:
   apiKey: ${baiduERNIE_KEY}
   secretKey: ${baiduERNIE_SECRET}

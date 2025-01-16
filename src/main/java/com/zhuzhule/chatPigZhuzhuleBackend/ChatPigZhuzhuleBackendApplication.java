@@ -28,13 +28,18 @@ public class ChatPigZhuzhuleBackendApplication {
 
     static final OkHttpClient HTTP_CLIENT = new OkHttpClient().
             newBuilder()
-            .connectTimeout(10,TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.MILLISECONDS).build();
+            .connectTimeout(50,TimeUnit.SECONDS)
+            .readTimeout(55, TimeUnit.SECONDS)
+            .writeTimeout(55, TimeUnit.MILLISECONDS).build();
 
 
     public static void main(String[] args) {
         SpringApplication.run(ChatPigZhuzhuleBackendApplication.class, args);
+    }
+
+    @RequestMapping(value="/wechat/callback")
+    public String getCallback(){
+        return "ok";
     }
 
     @RequestMapping(value = "/api")
@@ -49,6 +54,7 @@ public class ChatPigZhuzhuleBackendApplication {
                 "    \"enable_system_memory\": false,\n" +
                 "    \"disable_search\": false,\n" +
                 "    \"enable_citation\": false,\n" +
+
 //                "    \"max_output_tokens\":100,\n" +
                 "    \"messages\": [\n" +
                 "        {\n" +
