@@ -3,6 +3,8 @@ package com.zhuzhule.chatPigZhuzhuleBackend;
 import com.alibaba.fastjson.JSON;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.Result;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.UserInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @Configuration
 public class ChatPigZhuzhuleBackendApplication {
+    private static final Logger logger = LoggerFactory.getLogger(ChatPigZhuzhuleBackendApplication.class);
+
     @Value("${config.secretKey}")
     public  String SECRET_KEY;
 
@@ -38,7 +42,8 @@ public class ChatPigZhuzhuleBackendApplication {
     }
 
     @RequestMapping(value="/wechat/callback")
-    public String getCallback(){
+    public String getCallback(String code){
+        logger.info("微信授权登录返回的code : {}",code);
         return "ok";
     }
 

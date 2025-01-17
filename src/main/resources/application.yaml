@@ -13,3 +13,12 @@ wxlogin:
 config:
   apiKey: ${baiduERNIE_KEY}
   secretKey: ${baiduERNIE_SECRET}
+
+logging:
+  org:
+    springframework:
+      web: DEBUG
+  file:
+    name: chat.log
+  level:
+    root: INFO
