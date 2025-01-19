@@ -1,4 +1,4 @@
-package com.zhuzhule.chatPigZhuzhuleBackend;
+package com.zhuzhule.chatPigZhuzhuleBackend.service;
 
 import org.springframework.stereotype.Service;
 
