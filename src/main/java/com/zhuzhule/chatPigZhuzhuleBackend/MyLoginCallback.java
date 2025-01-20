@@ -19,6 +19,6 @@ public class MyLoginCallback implements WeixinLoginCallback {
     @Override
     public String onLoginSuccess(String sceneId, String openid) {
         logger.info("用户微信公众号回调成功sceneId : {}, openId : {}, code : {}",sceneId,openid);
-        return "您好！欢迎光临猪猪乐的空间，返回查看页面";
+        return "您好！欢迎光临猪猪乐的空间，请回到刚才扫码的页面继续使用pigGpt, 苹果的用户可以点击左上角箭头返回";
     }
 }

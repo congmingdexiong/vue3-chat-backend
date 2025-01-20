@@ -1,20 +1,27 @@
 package com.zhuzhule.chatPigZhuzhuleBackend;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.Result;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.UserInput;
+import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxResource;
+import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxUserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.json.JSONObject;
 import okhttp3.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.util.concurrent.TimeUnit;
 
@@ -24,32 +31,40 @@ import java.util.concurrent.TimeUnit;
 public class ChatPigZhuzhuleBackendApplication {
     private static final Logger logger = LoggerFactory.getLogger(ChatPigZhuzhuleBackendApplication.class);
 
-    @Value("${config.secretKey}")
-    public  String SECRET_KEY;
-
-    @Value("${config.apiKey}")
-    public  String API_KEY;
-
     static final OkHttpClient HTTP_CLIENT = new OkHttpClient().
             newBuilder()
-            .connectTimeout(50,TimeUnit.SECONDS)
+            .connectTimeout(50, TimeUnit.SECONDS)
             .readTimeout(55, TimeUnit.SECONDS)
             .writeTimeout(55, TimeUnit.MILLISECONDS).build();
+
+    @Value("${config.secretKey}")
+    public  String BAIDU_SECRET_KEY;
+
+    @Value("${config.apiKey}")
+    public  String BAIDU_API_KEY;
+
+    @Value("${wxlogin.app-id}")
+    public  String WX_APP_ID;
+
+    @Value("${wxlogin.app-secret}")
+    public  String WX_APP_SECRET;
+
+
 
 
     public static void main(String[] args) {
         SpringApplication.run(ChatPigZhuzhuleBackendApplication.class, args);
     }
 
-    @RequestMapping(value="/wechat/callback")
-    public String getCallback(String code){
-        logger.info("微信授权登录返回的code : {}",code);
-        return "ok";
-    }
+
+
+
 
     @RequestMapping(value = "/api")
-    public Result getTestData(@org.springframework.web.bind.annotation.RequestBody UserInput userMsg) throws Exception{
+    public Result getTestData(@org.springframework.web.bind.annotation.RequestBody UserInput userMsg,HttpServletRequest request) throws Exception{
+        HttpSession session = request.getSession();
         System.out.println("-------------------------------------------start-------------------------------------------");
+        logger.info("用户{}>>正在提问",((WxResource) session.getAttribute("userStorage")).getNickname());
         System.out.println("user question:" + userMsg.getUserMsg());
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\n" +
@@ -87,11 +102,6 @@ public class ChatPigZhuzhuleBackendApplication {
     }
 
 
-    @RequestMapping(value = "/**")
-    private String getOther(HttpServletRequest req){
-        System.out.println(req.getServletPath());
-        return "ok";
-    }
     /**
      * 从用户的AK，SK生成鉴权签名（Access Token）
      *
@@ -100,8 +110,8 @@ public class ChatPigZhuzhuleBackendApplication {
      */
      String getAccessToken() throws IOException {
         MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-        RequestBody body = RequestBody.create(mediaType, "grant_type=client_credentials&client_id=" + API_KEY
-                + "&client_secret=" + SECRET_KEY);
+        RequestBody body = RequestBody.create(mediaType, "grant_type=client_credentials&client_id=" + BAIDU_API_KEY
+                + "&client_secret=" + BAIDU_SECRET_KEY);
         Request request = new Request.Builder()
                 .url("https://aip.baidubce.com/oauth/2.0/token")
                 .method("POST", body)

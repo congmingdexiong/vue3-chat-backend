@@ -3,6 +3,17 @@ server:
 spring:
   application:
     name: chatBackend
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  mvc:
+    view:
+      prefix: classpath:/templates/
+      suffix: .html
+  web:
+    resources:
+      static-locations: classpath:/templates/,classpath:/static/
 
 wxlogin:
   app-id: ${wx_test_id}
