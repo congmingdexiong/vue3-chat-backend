@@ -121,4 +121,9 @@ public class ChatPigZhuzhuleBackendApplication {
         return new JSONObject(response.body().string()).getString("access_token");
     }
 
+    @RequestMapping(value = "/others")
+    public String handleOtherPath(){
+         return "redirect";
+    }
+
 }

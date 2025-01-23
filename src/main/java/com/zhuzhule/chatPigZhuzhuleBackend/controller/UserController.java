@@ -90,7 +90,6 @@ public class UserController {
                 .toJSONString();
 
         WxResource wxUserResource = mapper.readValue(resultResource, WxResource.class);
-        System.err.println(wxUserResource);
 
         HttpSession session = request.getSession();
         session.setAttribute("userStorage",wxUserResource);
