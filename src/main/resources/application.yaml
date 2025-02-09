@@ -21,9 +21,12 @@ wxlogin:
   api-prefix: /wxlogin
   verify-path: /wxverify
 
-config:
+baiduConfig:
   apiKey: ${baiduERNIE_KEY}
   secretKey: ${baiduERNIE_SECRET}
+
+deepSeekConfig:
+  apiKey: ${allenDeepSeek}
 
 logging:
   org:
