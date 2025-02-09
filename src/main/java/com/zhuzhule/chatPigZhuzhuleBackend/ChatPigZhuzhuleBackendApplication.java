@@ -4,20 +4,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 
 @SpringBootApplication
 @Configuration
 public class ChatPigZhuzhuleBackendApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(ChatPigZhuzhuleBackendApplication.class, args);
-    }
+  public static void main(String[] args) {
 
-    @RequestMapping(value = "/others")
-    public String handleOtherPath(){
-         return "redirect";
-    }
+    SpringApplication.run(ChatPigZhuzhuleBackendApplication.class, args);
+  }
 
+  @RequestMapping(value = "/others")
+  public String handleOtherPath() {
+    return "redirect";
+  }
 }
