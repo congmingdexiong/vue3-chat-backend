@@ -46,12 +46,15 @@ public class DeepseekAiController {
     System.out.println("user question->Deepseek Ai:" + userMsg.getUserMsg());
     logger.info("用户{}>>正在提问", ((WxResource) session.getAttribute("userStorage")).getNickname());
     MediaType mediaType = MediaType.parse("application/json");
+    String modelType = "deepseek-chat";
     RequestBody body =
         RequestBody.create(
             mediaType,
             "{\n  \"messages\": [\n    {\n      \"content\": \"You are a helpful assistant\",\n      \"role\": \"system\"\n    },\n    {\n      \"content\": \""
                 + userMsg.getUserMsg()
-                + "\",\n      \"role\": \"user\"\n    }\n  ],\n  \"model\": \"deepseek-chat\",\n  \"frequency_penalty\": 0,\n  \"max_tokens\": 2048,\n  \"presence_penalty\": 0,\n  \"response_format\": {\n    \"type\": \"text\"\n  },\n  \"stop\": null,\n  \"stream\": false,\n  \"stream_options\": null,\n  \"temperature\": 1,\n  \"top_p\": 1,\n  \"tools\": null,\n  \"tool_choice\": \"none\",\n  \"logprobs\": false,\n  \"top_logprobs\": null\n}");
+                + "\",\n      \"role\": \"user\"\n    }\n  ],\n  \"model\": \""
+                + modelType
+                + "\",\n  \"frequency_penalty\": 0,\n  \"max_tokens\": 2048,\n  \"presence_penalty\": 0,\n  \"response_format\": {\n    \"type\": \"text\"\n  },\n  \"stop\": null,\n  \"stream\": false,\n  \"stream_options\": null,\n  \"temperature\": 1,\n  \"top_p\": 1,\n  \"tools\": null,\n  \"tool_choice\": \"none\",\n  \"logprobs\": false,\n  \"top_logprobs\": null\n}");
     Request req =
         new Request.Builder()
             .url("https://api.deepseek.com/chat/completions")

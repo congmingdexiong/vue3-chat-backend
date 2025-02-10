@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -53,6 +54,21 @@ public class UserController {
       return null;
     }
     return wxRes;
+  }
+
+  @PostMapping(value = "/wechat/addUser")
+  @ResponseBody
+  public WxResource addUserInfo(HttpServletRequest request, HttpServletResponse response) {
+    HttpSession session = request.getSession();
+    WxResource wxResource = new WxResource();
+    wxResource.setOpenid("ozilK7CxeAw_hRJ1ARiIae7FhiuQ");
+    wxResource.setSex(0);
+    wxResource.setNickname("祝祝乐Test");
+    wxResource.setHeadimgurl(
+        "https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaELUV5cibzXYYvDEV2CQvNhRklNE8f2OtwJiaVPiaGBUfZyZ5YsiaJaFeIJux63Uf9kbH80sjaPcLKL8TQ/132");
+    session.setAttribute("userStorage", wxResource);
+    logger.info("你设置了一个测试用户,userInfo:{}", wxResource.toString());
+    return wxResource;
   }
 
   @GetMapping(value = "/wechat/callback")

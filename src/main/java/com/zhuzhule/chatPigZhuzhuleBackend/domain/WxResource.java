@@ -1,94 +1,127 @@
 package com.zhuzhule.chatPigZhuzhuleBackend.domain;
 
+import java.util.Arrays;
+
 public class WxResource {
 
-    String country;
+  String country;
 
-    String province;
+  String province;
 
-    String city;
+  String city;
 
-    String openid;
+  String openid;
 
-    Number sex;
+  Number sex;
 
-    String nickname;
+  String nickname;
 
-    String headimgurl;
+  String headimgurl;
 
-    String language;
+  String language;
 
-    String[] privilege;
+  String[] privilege;
 
-    public String getCountry() {
-        return country;
-    }
+  public String getCountry() {
+    return country;
+  }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
+  public void setCountry(String country) {
+    this.country = country;
+  }
 
-    public String getProvince() {
-        return province;
-    }
+  public String getProvince() {
+    return province;
+  }
 
-    public void setProvince(String province) {
-        this.province = province;
-    }
+  public void setProvince(String province) {
+    this.province = province;
+  }
 
-    public String getCity() {
-        return city;
-    }
+  public String getCity() {
+    return city;
+  }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+  public void setCity(String city) {
+    this.city = city;
+  }
 
-    public String getOpenid() {
-        return openid;
-    }
+  public String getOpenid() {
+    return openid;
+  }
 
-    public void setOpenid(String openid) {
-        this.openid = openid;
-    }
+  public void setOpenid(String openid) {
+    this.openid = openid;
+  }
 
-    public Number getSex() {
-        return sex;
-    }
+  public Number getSex() {
+    return sex;
+  }
 
-    public void setSex(Number sex) {
-        this.sex = sex;
-    }
+  public void setSex(Number sex) {
+    this.sex = sex;
+  }
 
-    public String getNickname() {
-        return nickname;
-    }
+  public String getNickname() {
+    return nickname;
+  }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
+  public void setNickname(String nickname) {
+    this.nickname = nickname;
+  }
 
-    public String getHeadimgurl() {
-        return headimgurl;
-    }
+  public String getHeadimgurl() {
+    return headimgurl;
+  }
 
-    public void setHeadimgurl(String headimgurl) {
-        this.headimgurl = headimgurl;
-    }
+  public void setHeadimgurl(String headimgurl) {
+    this.headimgurl = headimgurl;
+  }
 
-    public String getLanguage() {
-        return language;
-    }
+  public String getLanguage() {
+    return language;
+  }
 
-    public void setLanguage(String language) {
-        this.language = language;
-    }
+  public void setLanguage(String language) {
+    this.language = language;
+  }
 
-    public String[] getPrivilege() {
-        return privilege;
-    }
+  public String[] getPrivilege() {
+    return privilege;
+  }
 
-    public void setPrivilege(String[] privilege) {
-        this.privilege = privilege;
-    }
+  public void setPrivilege(String[] privilege) {
+    this.privilege = privilege;
+  }
+
+  @Override
+  public String toString() {
+    return "WxResource{"
+        + "country='"
+        + country
+        + '\''
+        + ", province='"
+        + province
+        + '\''
+        + ", city='"
+        + city
+        + '\''
+        + ", openid='"
+        + openid
+        + '\''
+        + ", sex="
+        + sex
+        + ", nickname='"
+        + nickname
+        + '\''
+        + ", headimgurl='"
+        + headimgurl
+        + '\''
+        + ", language='"
+        + language
+        + '\''
+        + ", privilege="
+        + Arrays.toString(privilege)
+        + '}';
+  }
 }
