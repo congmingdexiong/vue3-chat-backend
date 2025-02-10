@@ -39,10 +39,11 @@ public class DeepseekAiController {
       @org.springframework.web.bind.annotation.RequestBody UserInput userMsg,
       HttpServletRequest request)
       throws Exception {
+    Result result = new Result();
     HttpSession session = request.getSession();
     System.out.println(
         "-------------------------------------------start-------------------------------------------");
-    System.out.println("user question:" + userMsg.getUserMsg());
+    System.out.println("user question->Deepseek Ai:" + userMsg.getUserMsg());
     logger.info("用户{}>>正在提问", ((WxResource) session.getAttribute("userStorage")).getNickname());
     MediaType mediaType = MediaType.parse("application/json");
     RequestBody body =
@@ -62,14 +63,15 @@ public class DeepseekAiController {
     Response response = HTTP_CLIENT.newCall(req).execute();
     String responseData = response.body().string();
     String responseJsonString = JSON.parseObject(responseData).toJSONString();
+
     DeepseekResult resDeepSeekResult = JSON.parseObject(responseJsonString, DeepseekResult.class);
     Choice[] choices = resDeepSeekResult.getChoices();
-    Result result = new Result();
     result.setId(resDeepSeekResult.getId());
 
     result.setResult(choices[0].getMessage().getContent());
-    System.out.println("AI answer:");
+    System.out.println("Deepseek AI answer:");
     System.out.println(result.getResult());
+
     return result;
   }
 }

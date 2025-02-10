@@ -44,7 +44,7 @@ public class BaiduAiController {
     System.out.println(
         "-------------------------------------------start-------------------------------------------");
     logger.info("用户{}>>正在提问", ((WxResource) session.getAttribute("userStorage")).getNickname());
-    System.out.println("user question:" + userMsg.getUserMsg());
+    System.out.println("user question->Baidu AI:" + userMsg.getUserMsg());
     MediaType mediaType = MediaType.parse("application/json");
     RequestBody body =
         RequestBody.create(
@@ -86,7 +86,7 @@ public class BaiduAiController {
     Response responseFromApi = HTTP_CLIENT.newCall(requestToApi).execute();
     String resultData = JSON.parseObject(responseFromApi.body().string()).toJSONString();
     Result res = JSON.parseObject(resultData, Result.class);
-    System.out.println("AI answer:");
+    System.out.println("Baidu AI answer:");
     System.out.println(res.getResult());
     return res;
   }
