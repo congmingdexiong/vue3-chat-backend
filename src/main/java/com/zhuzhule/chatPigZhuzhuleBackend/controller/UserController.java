@@ -2,9 +2,12 @@ package com.zhuzhule.chatPigZhuzhuleBackend.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zhuzhule.chatPigZhuzhuleBackend.domain.TestUser;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxResource;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxUserToken;
+import com.zhuzhule.chatPigZhuzhuleBackend.service.TestUserService;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +17,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +28,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class UserController {
+
+  @Autowired private TestUserService testUserService;
+
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
   static final OkHttpClient HTTP_CLIENT =
@@ -50,6 +57,9 @@ public class UserController {
   public WxResource getUserInfo(HttpServletRequest request, HttpServletResponse response) {
     HttpSession session = request.getSession();
     WxResource wxRes = (WxResource) session.getAttribute("userStorage");
+    List<TestUser> testUsers = testUserService.findAll();
+    System.err.println(testUsers);
+
     if (StringUtils.isEmpty(wxRes) || StringUtils.isEmpty(wxRes.getNickname())) {
       return null;
     }

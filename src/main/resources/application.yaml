@@ -1,8 +1,18 @@
 server:
   port: 8081
+
+mybatis:
+  #  mapper-locations: com.zhuzhule.chatPigZhuzhuleBackend.mapper/*.xml
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.zhuzhule.chatPigZhuzhuleBackend.mapper
 spring:
   application:
     name: chatBackend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: 123456
   thymeleaf:
     cache: false
     prefix: classpath:/templates/
