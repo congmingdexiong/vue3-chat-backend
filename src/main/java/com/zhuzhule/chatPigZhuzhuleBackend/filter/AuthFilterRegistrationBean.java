@@ -32,13 +32,23 @@ public class AuthFilterRegistrationBean extends FilterRegistrationBean<HttpFilte
     public void doFilter(
         HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws IOException, ServletException {
+      logger.info("当前请求路径是:{}", request.getRequestURI());
       HttpSession session = request.getSession();
       WxResource wxRes = (WxResource) session.getAttribute("userStorage");
-      if (StringUtils.isEmpty(wxRes) && request.getRequestURI().equals("/wechat/callback1")) {
-        logger.info("当前用户没有信息存储");
-        response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("Not authorized");
+      if (StringUtils.isEmpty(wxRes)) {
+        if (request.getRequestURI().equals("/wechat/callback1")) {
+          logger.info("当前用户没有信息存储");
+          response.setContentType("text/plain");
+          response.setCharacterEncoding("UTF-8");
+          response.getWriter().write("Not authorized");
+        } else if (request.getRequestURI().startsWith("/api")) {
+          logger.info("当前用户没有信息存储");
+          response.setContentType("text/plain");
+          response.setCharacterEncoding("UTF-8");
+          response.getWriter().write("Not authorized");
+        } else {
+          chain.doFilter(request, response);
+        }
       } else {
         chain.doFilter(request, response);
       }

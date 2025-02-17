@@ -2,12 +2,10 @@ package com.zhuzhule.chatPigZhuzhuleBackend.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zhuzhule.chatPigZhuzhuleBackend.domain.TestUser;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxResource;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxUserToken;
 import com.zhuzhule.chatPigZhuzhuleBackend.service.TestUserService;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,8 +55,8 @@ public class UserController {
   public WxResource getUserInfo(HttpServletRequest request, HttpServletResponse response) {
     HttpSession session = request.getSession();
     WxResource wxRes = (WxResource) session.getAttribute("userStorage");
-    List<TestUser> testUsers = testUserService.findAll();
-    System.err.println(testUsers);
+    //    List<TestUser> testUsers = testUserService.findAll();
+    //    System.err.println(testUsers);
 
     if (StringUtils.isEmpty(wxRes) || StringUtils.isEmpty(wxRes.getNickname())) {
       return null;
