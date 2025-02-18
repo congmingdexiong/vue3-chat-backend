@@ -36,12 +36,8 @@ public class AuthFilterRegistrationBean extends FilterRegistrationBean<HttpFilte
       HttpSession session = request.getSession();
       WxResource wxRes = (WxResource) session.getAttribute("userStorage");
       if (StringUtils.isEmpty(wxRes)) {
-        if (request.getRequestURI().equals("/wechat/callback1")) {
-          logger.info("当前用户没有信息存储");
-          response.setContentType("text/plain");
-          response.setCharacterEncoding("UTF-8");
-          response.getWriter().write("Not authorized");
-        } else if (request.getRequestURI().startsWith("/api")) {
+        if (request.getRequestURI().equals("/wechat/callback1")
+            || request.getRequestURI().startsWith("/api")) {
           logger.info("当前用户没有信息存储");
           response.setContentType("text/plain");
           response.setCharacterEncoding("UTF-8");
