@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 public class MyLoginCallback implements WeixinLoginCallback {
   private static final Logger logger = LoggerFactory.getLogger(MyLoginCallback.class);
 
-  private final UserService userService;
+  //  private final UserService userService;
 
   public MyLoginCallback(UserService userService) {
-    this.userService = userService;
+    //   this.userService = userService;
   }
 
   @Override

@@ -2,10 +2,14 @@ package com.zhuzhule.chatPigZhuzhuleBackend.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zhuzhule.chatPigZhuzhuleBackend.domain.User;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxResource;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxUserToken;
 import com.zhuzhule.chatPigZhuzhuleBackend.service.TestUserService;
+import com.zhuzhule.chatPigZhuzhuleBackend.service.UserService;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +32,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class UserController {
 
   @Autowired private TestUserService testUserService;
+
+  @Autowired private UserService userService;
 
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -57,6 +63,25 @@ public class UserController {
     WxResource wxRes = (WxResource) session.getAttribute("userStorage");
     //    List<TestUser> testUsers = testUserService.findAll();
     //    System.err.println(testUsers);
+    //    User user = new User();
+    //    user.setId("ALLEN2");
+    //    user.setStatus("ok");
+    //    user.setNickName("allen_nick");
+    //    user.setPrepare1("prepare1");
+    //    user.setPrepare2("prepare2");
+    //    user.setPrepare3("prepare3");
+    //    LocalDateTime dateTime = LocalDateTime.now();
+    //    user.setCreatedTime(dateTime.toString());
+    //
+    //    List<User> users = userService.getUserById(user);
+    //    if (users.isEmpty()) {
+    //      logger.info("用户添加成功！");
+    //      userService.addUser(user);
+    //    } else {
+    //      logger.info("用户查询成功！");
+    //      System.err.println(users.isEmpty());
+    //      System.err.println(users);
+    //    }
 
     if (StringUtils.isEmpty(wxRes) || StringUtils.isEmpty(wxRes.getNickname())) {
       return null;
@@ -117,6 +142,25 @@ public class UserController {
     String resultResource = JSON.parseObject(responseFromResource.body().string()).toJSONString();
 
     WxResource wxUserResource = mapper.readValue(resultResource, WxResource.class);
+
+    User user = new User();
+    user.setId(wxUserResource.getOpenid());
+    user.setStatus("active");
+    user.setNickName(wxUserResource.getNickname());
+    user.setPrepare1("");
+    user.setPrepare2("");
+    user.setPrepare3("");
+    LocalDateTime dateTime = LocalDateTime.now();
+    user.setCreatedTime(dateTime.toString());
+
+    List<User> users = userService.getUserById(user);
+    if (users.isEmpty()) {
+      logger.info("用户添加成功！");
+      userService.addUser(user);
+    } else {
+      logger.info("用户查询成功！");
+      System.err.println(users);
+    }
 
     HttpSession session = request.getSession();
     session.setAttribute("userStorage", wxUserResource);
