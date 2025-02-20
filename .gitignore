@@ -34,3 +34,4 @@ build/
 *.log
 *.tmp
 *.tmp.*
+*.log.*.gz
