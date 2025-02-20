@@ -1,5 +1,8 @@
 package com.zhuzhule.chatPigZhuzhuleBackend.domain;
 
+import lombok.Data;
+
+@Data
 public class TestUser {
   @Override
   public String toString() {

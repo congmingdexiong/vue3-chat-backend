@@ -2,9 +2,8 @@ package com.zhuzhule.chatPigZhuzhuleBackend.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zhuzhule.chatPigZhuzhuleBackend.domain.User;
-import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxResource;
-import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxUserToken;
+import com.zhuzhule.chatPigZhuzhuleBackend.domain.*;
+import com.zhuzhule.chatPigZhuzhuleBackend.service.ConversationService;
 import com.zhuzhule.chatPigZhuzhuleBackend.service.TestUserService;
 import com.zhuzhule.chatPigZhuzhuleBackend.service.UserService;
 import java.io.IOException;
@@ -29,13 +28,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class UserController {
+public class UserConversationController {
 
   @Autowired private TestUserService testUserService;
 
   @Autowired private UserService userService;
 
-  private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+  @Autowired private ConversationService conversationService;
+
+  private static final Logger logger = LoggerFactory.getLogger(UserConversationController.class);
 
   static final OkHttpClient HTTP_CLIENT =
       new OkHttpClient()
@@ -61,32 +62,73 @@ public class UserController {
   public WxResource getUserInfo(HttpServletRequest request, HttpServletResponse response) {
     HttpSession session = request.getSession();
     WxResource wxRes = (WxResource) session.getAttribute("userStorage");
-    //    List<TestUser> testUsers = testUserService.findAll();
-    //    System.err.println(testUsers);
-    //    User user = new User();
-    //    user.setId("ALLEN2");
-    //    user.setStatus("ok");
-    //    user.setNickName("allen_nick");
-    //    user.setPrepare1("prepare1");
-    //    user.setPrepare2("prepare2");
-    //    user.setPrepare3("prepare3");
-    //    LocalDateTime dateTime = LocalDateTime.now();
-    //    user.setCreatedTime(dateTime.toString());
-    //
-    //    List<User> users = userService.getUserById(user);
-    //    if (users.isEmpty()) {
-    //      logger.info("用户添加成功！");
-    //      userService.addUser(user);
-    //    } else {
-    //      logger.info("用户查询成功！");
-    //      System.err.println(users.isEmpty());
-    //      System.err.println(users);
-    //    }
 
+    User user = new User();
+    user.setId(wxRes.getOpenid());
+    List<Conversation> conversations = conversationService.getConversationByUserId(user);
+    wxRes.setConversations(conversations);
     if (StringUtils.isEmpty(wxRes) || StringUtils.isEmpty(wxRes.getNickname())) {
       return null;
     }
     return wxRes;
+  }
+
+  @PostMapping(value = "/api/createConversation")
+  @ResponseBody
+  public Number createConversation(
+      @org.springframework.web.bind.annotation.RequestBody Conversation conversation,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+    Integer res;
+    HttpSession session = request.getSession();
+    WxResource wxRes = (WxResource) session.getAttribute("userStorage");
+    if (StringUtils.isEmpty(wxRes)) {
+      logger.info("当前用户没有信息存储");
+    }
+    try {
+      LocalDateTime dateTime = LocalDateTime.now();
+      conversation.setId(conversation.getId());
+      conversation.setUserId(wxRes.getOpenid());
+      conversation.setLabel("New chat");
+      conversation.setCreatedTime(dateTime.toString());
+      res = conversationService.addConversation(conversation);
+    } catch (Error e) {
+      logger.error("service error {}", e);
+      return -1;
+    }
+    return res;
+  }
+
+  @PostMapping(value = "/api/updateConversation")
+  @ResponseBody
+  public Number updateConversation(
+      @org.springframework.web.bind.annotation.RequestBody Conversation conversation,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+    Integer res;
+    try {
+      res = conversationService.updateLabelById(conversation);
+    } catch (Error e) {
+      logger.error("service error {}", e);
+      return -1;
+    }
+    return res;
+  }
+
+  @PostMapping(value = "/api/deleteConversation")
+  @ResponseBody
+  public Number deleteConversation(
+      @org.springframework.web.bind.annotation.RequestBody Conversation conversation,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+    Integer res;
+    try {
+      res = conversationService.deleteConversationById(conversation.getId());
+    } catch (Error e) {
+      logger.error("service error {}", e);
+      return -1;
+    }
+    return res;
   }
 
   @PostMapping(value = "/wechat/addUser")
@@ -94,12 +136,14 @@ public class UserController {
   public WxResource addUserInfo(HttpServletRequest request, HttpServletResponse response) {
     HttpSession session = request.getSession();
     WxResource wxResource = new WxResource();
-    wxResource.setOpenid("ozilK7CxeAw_hRJ1ARiIae7FhiuQ");
+    wxResource.setOpenid("testK7CxeAw_hRJ1ARiIae7FhiuQ");
     wxResource.setSex(0);
     wxResource.setNickname("祝祝乐Test");
     wxResource.setHeadimgurl(
         "https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaELUV5cibzXYYvDEV2CQvNhRklNE8f2OtwJiaVPiaGBUfZyZ5YsiaJaFeIJux63Uf9kbH80sjaPcLKL8TQ/132");
     session.setAttribute("userStorage", wxResource);
+
+    this.mapper2dbUser(wxResource);
     logger.info("你设置了一个测试用户,userInfo:{}", wxResource.toString());
     return wxResource;
   }
@@ -142,11 +186,21 @@ public class UserController {
     String resultResource = JSON.parseObject(responseFromResource.body().string()).toJSONString();
 
     WxResource wxUserResource = mapper.readValue(resultResource, WxResource.class);
+    this.mapper2dbUser(wxUserResource);
+    HttpSession session = request.getSession();
+    session.setAttribute("userStorage", wxUserResource);
+    WxResource wxRes = (WxResource) session.getAttribute("userStorage");
+    if (StringUtils.isEmpty(wxRes)) {
+      logger.info("当前用户没有信息存储");
+    }
+    return "index";
+  }
 
+  private void mapper2dbUser(WxResource wxResource) {
     User user = new User();
-    user.setId(wxUserResource.getOpenid());
+    user.setId(wxResource.getOpenid());
     user.setStatus("active");
-    user.setNickName(wxUserResource.getNickname());
+    user.setNickName(wxResource.getNickname());
     user.setPrepare1("");
     user.setPrepare2("");
     user.setPrepare3("");
@@ -158,16 +212,8 @@ public class UserController {
       logger.info("用户添加成功！");
       userService.addUser(user);
     } else {
-      logger.info("用户查询成功！");
+      logger.info("用户存在查询成功！");
       System.err.println(users);
     }
-
-    HttpSession session = request.getSession();
-    session.setAttribute("userStorage", wxUserResource);
-    WxResource wxRes = (WxResource) session.getAttribute("userStorage");
-    if (StringUtils.isEmpty(wxRes)) {
-      logger.info("当前用户没有信息存储");
-    }
-    return "index";
   }
 }
