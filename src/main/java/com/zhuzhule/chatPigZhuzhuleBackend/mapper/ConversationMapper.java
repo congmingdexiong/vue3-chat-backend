@@ -16,6 +16,8 @@ public interface ConversationMapper {
 
   public List<Conversation> getConversationByUserId(User user);
 
+  public List<Conversation> getConversationById(String conversationId);
+
   public Integer deleteConversationById(String id);
 
   public Integer updateLabelById(Conversation conversation);

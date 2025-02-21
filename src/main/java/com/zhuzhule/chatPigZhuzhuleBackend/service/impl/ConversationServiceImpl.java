@@ -33,6 +33,11 @@ public class ConversationServiceImpl implements ConversationService {
   }
 
   @Override
+  public List<Conversation> getConversationById(String conversationId) {
+    return conversationMapper.getConversationById(conversationId);
+  }
+
+  @Override
   public Integer deleteConversationById(String id) {
     return conversationMapper.deleteConversationById(id);
   }

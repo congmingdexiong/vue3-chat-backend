@@ -1,6 +1,7 @@
 package com.zhuzhule.chatPigZhuzhuleBackend.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.zhuzhule.chatPigZhuzhuleBackend.domain.Conversation;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.Result;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxResource;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.deepseek.Choice;
@@ -74,6 +75,7 @@ public class DeepseekAiController {
     result.setId(resDeepSeekResult.getId());
 
     result.setResult(choices[0].getMessage().getContent());
+    result.setConversation((Conversation) session.getAttribute("activeConversation"));
     System.out.println("Deepseek AI answer:");
     System.out.println(result.getResult());
 

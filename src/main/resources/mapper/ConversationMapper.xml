@@ -40,6 +40,16 @@
         </where>
     </select>
 
+    <select id="getConversationById" parameterType="String"
+            resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM conversation
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
     <delete id="deleteConversationById" parameterType="string">
         delete
         from conversation

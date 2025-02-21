@@ -1,9 +1,10 @@
 package com.zhuzhule.chatPigZhuzhuleBackend.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.zhuzhule.chatPigZhuzhuleBackend.domain.Conversation;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.Result;
-import com.zhuzhule.chatPigZhuzhuleBackend.domain.UserInput;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxResource;
+import com.zhuzhule.chatPigZhuzhuleBackend.domain.deepseek.RequestPayload;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
@@ -37,14 +38,14 @@ public class BaiduAiController {
 
   @RequestMapping(value = "/baidu")
   public Result getTestData(
-      @org.springframework.web.bind.annotation.RequestBody UserInput userMsg,
+      @org.springframework.web.bind.annotation.RequestBody RequestPayload requestPayload,
       HttpServletRequest request)
       throws Exception {
     HttpSession session = request.getSession();
     System.out.println(
         "-------------------------------------------start-------------------------------------------");
     logger.info("用户{}>>正在提问", ((WxResource) session.getAttribute("userStorage")).getNickname());
-    System.out.println("user question->Baidu AI:" + userMsg.getUserMsg());
+    System.out.println("user question->Baidu AI:" + requestPayload.getUserMsg());
     MediaType mediaType = MediaType.parse("application/json");
     RequestBody body =
         RequestBody.create(
@@ -63,7 +64,7 @@ public class BaiduAiController {
                 + "        {\n"
                 + "            \"role\": \"user\",\n"
                 + "            \"content\": \""
-                + userMsg.getUserMsg()
+                + requestPayload.getUserMsg()
                 + "\"\n"
                 +
                 //                "            \"content\":
@@ -86,6 +87,7 @@ public class BaiduAiController {
     Response responseFromApi = HTTP_CLIENT.newCall(requestToApi).execute();
     String resultData = JSON.parseObject(responseFromApi.body().string()).toJSONString();
     Result res = JSON.parseObject(resultData, Result.class);
+    res.setConversation((Conversation) session.getAttribute("activeConversation"));
     System.out.println("Baidu AI answer:");
     System.out.println(res.getResult());
     return res;

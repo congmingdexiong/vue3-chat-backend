@@ -1,5 +1,8 @@
 package com.zhuzhule.chatPigZhuzhuleBackend.domain.deepseek;
 
+import lombok.Data;
+
+@Data
 public class Opts {
   public Boolean getEnabledReasoner() {
     return enabledReasoner;
@@ -9,10 +12,7 @@ public class Opts {
     this.enabledReasoner = enabledReasoner;
   }
 
-  @Override
-  public String toString() {
-    return "Opts{" + "enabledReasoner='" + enabledReasoner + '\'' + '}';
-  }
-
   Boolean enabledReasoner;
+
+  String conversationId;
 }
