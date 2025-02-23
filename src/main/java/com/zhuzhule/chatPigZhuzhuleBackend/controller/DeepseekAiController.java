@@ -77,8 +77,8 @@ public class DeepseekAiController {
     result.setResult(choices[0].getMessage().getContent());
     result.setConversation((Conversation) session.getAttribute("activeConversation"));
     System.out.println("Deepseek AI answer:");
-    System.out.println(result.getResult());
-
+    //    System.out.println(result.getResult());
+    //    System.err.println("==================");
     return result;
   }
 }

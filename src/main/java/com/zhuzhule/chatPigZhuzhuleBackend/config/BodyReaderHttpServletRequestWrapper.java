@@ -9,9 +9,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-/**
- * @author <a href="mailto:lanxing@chances.com.cn">lanxing</a>
- */
 public class BodyReaderHttpServletRequestWrapper extends HttpServletRequestWrapper {
   private final byte[] body;
 

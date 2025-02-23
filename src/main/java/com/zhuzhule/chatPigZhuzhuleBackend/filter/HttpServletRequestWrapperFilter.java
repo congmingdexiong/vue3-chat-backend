@@ -8,17 +8,9 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Component;
 
-/**
- * @author <a href="mailto:lanxing@chances.com.cn">lanxing</a>
- */
-@Component
-@WebFilter(
-    filterName = "httpServletRequestWrapperFilter",
-    urlPatterns = {"/*"})
+/** Get request body */
 public class HttpServletRequestWrapperFilter implements Filter {
 
   @Override

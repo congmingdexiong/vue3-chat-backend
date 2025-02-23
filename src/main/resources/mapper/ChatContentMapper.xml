@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhuzhule.chatPigZhuzhuleBackend.mapper.ChatContentMapper">
+
+    <resultMap id="BaseResultMap" type="com.zhuzhule.chatPigZhuzhuleBackend.domain.ChatContent">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="conversationId" column="conversation_id"/>
+        <result property="content" column="content"/>
+        <result property="prepare1" column="prepare_1"/>
+        <result property="prepare2" column="prepare_2"/>
+        <result property="prepare3" column="prepare_3"/>
+        <result property="userType" column="user_type"/>
+        <result property="createdTime" column="created_time"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,user_id,conversation_id,content,prepare_1,prepare_2,
+        prepare_3,user_type,createdTime
+    </sql>
+
+    <insert id="addChatContent" keyProperty="id"
+            parameterType="com.zhuzhule.chatPigZhuzhuleBackend.domain.ChatContent">
+        insert into chat_content(id, user_id, created_time, prepare_1, prepare_2, prepare_3, conversation_id, user_type,
+                                 content)
+        values (#{id}, #{userId}, #{createdTime}, null, null, null, #{conversationId},
+                #{userType},
+                #{content});
+    </insert>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM chat_content
+    </select>
+
+    <select id="getChatContentByUserId" parameterType="String"
+            resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM chat_content
+        <where>
+            user_id = #{user_id}
+        </where>
+    </select>
+
+    <select id="getChatContentByConversationId" parameterType="String"
+            resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM chat_content
+        <where>
+            conversation_id = #{conversation_id}
+        </where>
+    </select>
+
+    <update id="updateContentById" parameterType="com.zhuzhule.chatPigZhuzhuleBackend.domain.ChatContent">
+        UPDATE chat_content
+        <set>
+            content = #{content}
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>

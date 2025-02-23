@@ -3,6 +3,7 @@ package com.zhuzhule.chatPigZhuzhuleBackend.controller;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.*;
+import com.zhuzhule.chatPigZhuzhuleBackend.service.ChatContentService;
 import com.zhuzhule.chatPigZhuzhuleBackend.service.ConversationService;
 import com.zhuzhule.chatPigZhuzhuleBackend.service.TestUserService;
 import com.zhuzhule.chatPigZhuzhuleBackend.service.UserService;
@@ -35,6 +36,8 @@ public class UserConversationController {
   @Autowired private UserService userService;
 
   @Autowired private ConversationService conversationService;
+
+  @Autowired private ChatContentService chatContentService;
 
   private static final Logger logger = LoggerFactory.getLogger(UserConversationController.class);
 
@@ -193,6 +196,7 @@ public class UserConversationController {
     if (StringUtils.isEmpty(wxRes)) {
       logger.info("当前用户没有信息存储");
     }
+
     return "index";
   }
 
@@ -212,8 +216,7 @@ public class UserConversationController {
       logger.info("用户添加成功！");
       userService.addUser(user);
     } else {
-      logger.info("用户存在查询成功！");
-      System.err.println(users);
+      logger.info("用户存在查询成功:{}", users);
     }
   }
 }

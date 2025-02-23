@@ -15,4 +15,6 @@ public class Opts {
   Boolean enabledReasoner;
 
   String conversationId;
+
+  String aiType;
 }

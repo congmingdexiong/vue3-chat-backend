@@ -1,9 +1,15 @@
 package com.zhuzhule.chatPigZhuzhuleBackend.interceptor;
 
+import static com.zhuzhule.chatPigZhuzhuleBackend.utils.IdGenerator.generateUUID;
+
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.zhuzhule.chatPigZhuzhuleBackend.config.HttpServletResponseCopier;
+import com.zhuzhule.chatPigZhuzhuleBackend.domain.ChatContent;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.Conversation;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxResource;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.deepseek.RequestPayload;
+import com.zhuzhule.chatPigZhuzhuleBackend.service.ChatContentService;
 import com.zhuzhule.chatPigZhuzhuleBackend.service.ConversationService;
 import com.zhuzhule.chatPigZhuzhuleBackend.utils.HttpHelper;
 import java.time.LocalDateTime;
@@ -16,12 +22,46 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
 @Component
 public class ConversationInterceptor implements HandlerInterceptor {
+
+  @Override
+  public void afterCompletion(
+      HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+      throws Exception {
+    byte[] copy = ((HttpServletResponseCopier) response).getCopy();
+    String str = new String(copy, "UTF-8");
+    HttpSession session = request.getSession(false);
+    JSONObject responseJson = JSON.parseObject(str);
+    ChatContent content = new ChatContent();
+    WxResource wxRes = (WxResource) session.getAttribute("userStorage");
+    Conversation conversation = (Conversation) session.getAttribute("activeConversation");
+    LocalDateTime dateTime = LocalDateTime.now();
+
+    content.setId(generateUUID());
+    content.setConversationId(conversation.getId());
+    content.setUserType("bot");
+    content.setCreatedTime(dateTime.toString());
+    content.setContent((String) responseJson.get("result"));
+    content.setUserId(wxRes.getOpenid());
+    chatContentService.addChatContent(content);
+  }
+
+  @Override
+  public void postHandle(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      Object handler,
+      ModelAndView modelAndView)
+      throws Exception {}
+
   private static final Logger logger = LoggerFactory.getLogger(ConversationInterceptor.class);
 
   @Autowired private ConversationService conversationService;
+
+  @Autowired private ChatContentService chatContentService;
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -35,7 +75,7 @@ public class ConversationInterceptor implements HandlerInterceptor {
     String body = HttpHelper.getBodyString(request);
     String responseJsonString = JSON.parseObject(body).toJSONString();
     RequestPayload requestPayload = JSON.parseObject(responseJsonString, RequestPayload.class);
-    System.err.println(requestPayload);
+    String aiTye = requestPayload.getOpts().getAiType();
     Integer res;
     try {
       if (requestPayload.getOpts().getConversationId() != null) {
@@ -51,13 +91,27 @@ public class ConversationInterceptor implements HandlerInterceptor {
           conversation.setUserId(wxRes.getOpenid());
           conversation.setLabel("New chat");
           conversation.setCreatedTime(dateTime.toString());
+          conversation.setAiType(aiTye);
           res = conversationService.addConversation(conversation);
           // todo add success or not
           session.setAttribute("activeConversation", conversation);
-          logger.info("activeConversation创建成功！！");
+          logger.info("activeConversation创建成功,id:{}", conversation.getId());
         } else {
+          logger.info("activeConversation 已经存在 id:{}", conversations.get(0).getId());
           session.setAttribute("activeConversation", conversations.get(0));
         }
+        Conversation conversationSession =
+            (Conversation) session.getAttribute("activeConversation");
+
+        ChatContent content = new ChatContent();
+        content.setId(generateUUID());
+        content.setConversationId(conversationSession.getId());
+        content.setUserId(wxRes.getOpenid());
+        content.setContent(requestPayload.getUserMsg());
+        content.setUserType("user");
+        LocalDateTime dateTime = LocalDateTime.now();
+        content.setCreatedTime(dateTime.toString());
+        chatContentService.addChatContent(content);
       }
 
     } catch (Error e) {
