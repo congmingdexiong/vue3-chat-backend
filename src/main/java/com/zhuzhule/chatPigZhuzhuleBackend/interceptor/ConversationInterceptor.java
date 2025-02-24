@@ -75,7 +75,7 @@ public class ConversationInterceptor implements HandlerInterceptor {
     String body = HttpHelper.getBodyString(request);
     String responseJsonString = JSON.parseObject(body).toJSONString();
     RequestPayload requestPayload = JSON.parseObject(responseJsonString, RequestPayload.class);
-    String aiTye = requestPayload.getOpts().getAiType();
+    String aiType = requestPayload.getOpts().getAiType();
     Integer res;
     try {
       if (requestPayload.getOpts().getConversationId() != null) {
@@ -91,7 +91,12 @@ public class ConversationInterceptor implements HandlerInterceptor {
           conversation.setUserId(wxRes.getOpenid());
           conversation.setLabel(requestPayload.getUserMsg());
           conversation.setCreatedTime(dateTime.toString());
-          conversation.setAiType(aiTye);
+          if (requestPayload.getOpts().getEnabledReasoner() == null) {
+            conversation.setAiType(aiType);
+          } else {
+            conversation.setAiType(
+                requestPayload.getOpts().getEnabledReasoner() ? "deepseek-reasoner" : aiType);
+          }
           res = conversationService.addConversation(conversation);
           // todo add success or not
           session.setAttribute("activeConversation", conversation);
