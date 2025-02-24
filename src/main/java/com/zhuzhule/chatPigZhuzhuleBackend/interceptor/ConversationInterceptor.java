@@ -89,7 +89,7 @@ public class ConversationInterceptor implements HandlerInterceptor {
           LocalDateTime dateTime = LocalDateTime.now();
           conversation.setId(requestPayload.getOpts().getConversationId());
           conversation.setUserId(wxRes.getOpenid());
-          conversation.setLabel("New chat");
+          conversation.setLabel(requestPayload.getUserMsg());
           conversation.setCreatedTime(dateTime.toString());
           conversation.setAiType(aiTye);
           res = conversationService.addConversation(conversation);

@@ -19,7 +19,7 @@
     <sql id="Base_Column_List">
         id
         ,user_id,conversation_id,content,prepare_1,prepare_2,
-        prepare_3,user_type,createdTime
+        prepare_3,user_type,created_time
     </sql>
 
     <insert id="addChatContent" keyProperty="id"
