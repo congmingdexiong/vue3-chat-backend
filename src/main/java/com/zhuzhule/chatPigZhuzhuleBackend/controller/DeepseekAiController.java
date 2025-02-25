@@ -66,19 +66,22 @@ public class DeepseekAiController {
             .addHeader("Accept", "application/json")
             .addHeader("Authorization", "Bearer " + DEEP_SEEK_SECRET_KEY)
             .build();
-    Response response = HTTP_CLIENT.newCall(req).execute();
-    String responseData = response.body().string();
-    String responseJsonString = JSON.parseObject(responseData).toJSONString();
+    try {
+      Response response = HTTP_CLIENT.newCall(req).execute();
+      String responseData = response.body().string();
+      String responseJsonString = JSON.parseObject(responseData).toJSONString();
 
-    DeepseekResult resDeepSeekResult = JSON.parseObject(responseJsonString, DeepseekResult.class);
-    Choice[] choices = resDeepSeekResult.getChoices();
-    result.setId(resDeepSeekResult.getId());
-
-    result.setResult(choices[0].getMessage().getContent());
-    result.setConversation((Conversation) session.getAttribute("activeConversation"));
-    System.out.println("Deepseek AI answer:");
-    //    System.out.println(result.getResult());
-    //    System.err.println("==================");
-    return result;
+      DeepseekResult resDeepSeekResult = JSON.parseObject(responseJsonString, DeepseekResult.class);
+      Choice[] choices = resDeepSeekResult.getChoices();
+      result.setId(resDeepSeekResult.getId());
+      result.setConversation((Conversation) session.getAttribute("activeConversation"));
+      result.setResult(choices[0].getMessage().getContent());
+      System.out.println("Deepseek AI answer:");
+    } catch (Error error) {
+      logger.info("error:{}", error);
+      result.setResult("服务器正在忙碌，请重试！");
+    } finally {
+      return result;
+    }
   }
 }

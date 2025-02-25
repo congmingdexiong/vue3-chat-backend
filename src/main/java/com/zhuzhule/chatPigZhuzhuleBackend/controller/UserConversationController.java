@@ -65,14 +65,13 @@ public class UserConversationController {
   public WxResource getUserInfo(HttpServletRequest request, HttpServletResponse response) {
     HttpSession session = request.getSession();
     WxResource wxRes = (WxResource) session.getAttribute("userStorage");
-
+    if (StringUtils.isEmpty(wxRes) || StringUtils.isEmpty(wxRes.getNickname())) {
+      return null;
+    }
     User user = new User();
     user.setId(wxRes.getOpenid());
     List<Conversation> conversations = conversationService.getConversationByUserId(user);
     wxRes.setConversations(conversations);
-    if (StringUtils.isEmpty(wxRes) || StringUtils.isEmpty(wxRes.getNickname())) {
-      return null;
-    }
     return wxRes;
   }
 

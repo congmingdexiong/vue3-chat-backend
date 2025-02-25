@@ -44,7 +44,11 @@ public class ConversationInterceptor implements HandlerInterceptor {
     content.setConversationId(conversation.getId());
     content.setUserType("bot");
     content.setCreatedTime(dateTime.toString());
-    content.setContent((String) responseJson.get("result"));
+    if (responseJson.get("result") == null) {
+      content.setContent("服务器正在忙碌，请重试！");
+    } else {
+      content.setContent((String) responseJson.get("result"));
+    }
     content.setUserId(wxRes.getOpenid());
     chatContentService.addChatContent(content);
   }
