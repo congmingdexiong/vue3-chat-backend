@@ -27,9 +27,9 @@ public class DeepseekAiController {
   static final OkHttpClient HTTP_CLIENT =
       new OkHttpClient()
           .newBuilder()
-          .connectTimeout(500, TimeUnit.SECONDS)
-          .readTimeout(500, TimeUnit.SECONDS)
-          .writeTimeout(500, TimeUnit.MILLISECONDS)
+          .connectTimeout(180000, TimeUnit.SECONDS)
+          .readTimeout(180000, TimeUnit.SECONDS)
+          .writeTimeout(180000, TimeUnit.MILLISECONDS)
           .build();
 
   @Value("${deepSeekConfig.apiKey}")
@@ -77,6 +77,7 @@ public class DeepseekAiController {
       result.setConversation((Conversation) session.getAttribute("activeConversation"));
       result.setResult(choices[0].getMessage().getContent());
       System.out.println("Deepseek AI answer:");
+      System.out.println(result.getResult());
     } catch (Error error) {
       logger.info("error:{}", error);
       result.setResult("服务器正在忙碌，请重试！");

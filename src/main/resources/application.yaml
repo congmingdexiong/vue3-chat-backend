@@ -1,5 +1,7 @@
 server:
   port: 8081
+  tomcat:
+    connection-timeout: 180s
 
 mybatis:
   #  mapper-locations: com.zhuzhule.chatPigZhuzhuleBackend.mapper/*.xml
@@ -21,6 +23,8 @@ spring:
     view:
       prefix: classpath:/templates/
       suffix: .html
+    async:
+      request-timeout: 3000000
   web:
     resources:
       static-locations: classpath:/templates/,classpath:/static/
