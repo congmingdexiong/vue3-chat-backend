@@ -1,0 +1,52 @@
+server:
+  port: 8081
+  tomcat:
+    connection-timeout: 180s
+
+mybatis:
+  #  mapper-locations: com.zhuzhule.chatPigZhuzhuleBackend.mapper/*.xml
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.zhuzhule.chatPigZhuzhuleBackend.mapper
+spring:
+  application:
+    name: chatBackend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: 123456
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  mvc:
+    view:
+      prefix: classpath:/templates/
+      suffix: .html
+    async:
+      request-timeout: 3000000
+  web:
+    resources:
+      static-locations: classpath:/templates/,classpath:/static/
+
+wxlogin:
+  app-id: ${wx_test_id}
+  app-secret: ${wx_test_secret}
+  api-prefix: /wxlogin
+  verify-path: /wxverify
+
+baiduConfig:
+  apiKey: ${baiduERNIE_KEY}
+  secretKey: ${baiduERNIE_SECRET}
+
+deepSeekConfig:
+  apiKey: ${allenDeepSeek}
+
+logging:
+  org:
+    springframework:
+      web: DEBUG
+  file:
+    name: chat.log
+  level:
+    root: INFO

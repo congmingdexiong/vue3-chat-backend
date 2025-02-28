@@ -1,18 +1,24 @@
 package com.zhuzhule.chatPigZhuzhuleBackend.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.zhuzhule.chatPigZhuzhuleBackend.domain.ChatContent;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.Conversation;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.Result;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.WxResource;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.deepseek.Choice;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.deepseek.DeepseekResult;
 import com.zhuzhule.chatPigZhuzhuleBackend.domain.deepseek.RequestPayload;
+import com.zhuzhule.chatPigZhuzhuleBackend.service.ChatContentService;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class DeepseekAiController {
 
   private static final Logger logger = LoggerFactory.getLogger(DeepseekAiController.class);
+
+  @Autowired private ChatContentService chatContentService;
 
   static final OkHttpClient HTTP_CLIENT =
       new OkHttpClient()
@@ -50,14 +58,11 @@ public class DeepseekAiController {
     System.out.println("user question->Deepseek Ai(\"" + modelType + "\"):" + userMsg);
     logger.info("用户{}>>正在提问", ((WxResource) session.getAttribute("userStorage")).getNickname());
     MediaType mediaType = MediaType.parse("application/json");
-    RequestBody body =
-        RequestBody.create(
-            mediaType,
-            "{\n  \"messages\": [\n    {\n      \"content\": \"You are a helpful assistant\",\n      \"role\": \"system\"\n    },\n    {\n      \"content\": \""
-                + userMsg
-                + "\",\n      \"role\": \"user\"\n    }\n  ],\n  \"model\": \""
-                + modelType
-                + "\",\n  \"frequency_penalty\": 0,\n  \"max_tokens\": 2048,\n  \"presence_penalty\": 0,\n  \"response_format\": {\n    \"type\": \"text\"\n  },\n  \"stop\": null,\n  \"stream\": false,\n  \"stream_options\": null,\n  \"temperature\": 1,\n  \"top_p\": 1,\n  \"tools\": null,\n  \"tool_choice\": \"none\",\n  \"logprobs\": false,\n  \"top_logprobs\": null\n}");
+    Conversation conversation = (Conversation) session.getAttribute("activeConversation");
+    List<ChatContent> chatContents =
+        chatContentService.getChatContentByConversationId(conversation.getId());
+    String inputStr = this.getJSONString(userMsg, chatContents, modelType);
+    RequestBody body = RequestBody.create(mediaType, inputStr);
     Request req =
         new Request.Builder()
             .url("https://api.deepseek.com/chat/completions")
@@ -84,5 +89,46 @@ public class DeepseekAiController {
     } finally {
       return result;
     }
+  }
+
+  public String getJSONString(String userMsg, List<ChatContent> chatContents, String modelType) {
+    JSONObject jsonObject = new JSONObject();
+
+    JSONArray jsonMessagesArray = new JSONArray();
+    JSONObject firstTimeSetting = new JSONObject();
+    firstTimeSetting.put("role", "system");
+    firstTimeSetting.put("content", "You are a helpful assistant");
+    jsonMessagesArray.add(firstTimeSetting);
+    for (int i = 0; i <= chatContents.size() - 1; i++) {
+      JSONObject subObject = new JSONObject();
+      String serveType =
+          chatContents.get(i).getUserType().equals("user")
+              ? "user"
+              : chatContents.get(i).getUserType().equals("system") ? "system" : "assistant";
+
+      subObject.put("role", serveType);
+      subObject.put("content", chatContents.get(i).getContent());
+      jsonMessagesArray.add(subObject);
+    }
+
+    jsonObject.put("messages", jsonMessagesArray);
+    jsonObject.put("model", modelType);
+    jsonObject.put("frequency_penalty", 0);
+    jsonObject.put("max_tokens", 2048);
+    jsonObject.put("presence_penalty", 0);
+    jsonObject.put("stop", null);
+    jsonObject.put("stream", false);
+    jsonObject.put("stream_options", null);
+    jsonObject.put("temperature", 1);
+    jsonObject.put("top_p", 1);
+    jsonObject.put("tools", null);
+    jsonObject.put("tool_choice", "none");
+    jsonObject.put("logprobs", false);
+    jsonObject.put("top_logprobs", null);
+
+    JSONObject jsonFormat = new JSONObject();
+    jsonFormat.put("type", "text");
+    jsonObject.put("response_format", jsonFormat);
+    return jsonObject.toJSONString();
   }
 }
