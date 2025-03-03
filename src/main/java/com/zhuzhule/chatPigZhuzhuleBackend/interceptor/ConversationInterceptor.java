@@ -106,7 +106,10 @@ public class ConversationInterceptor implements HandlerInterceptor {
           session.setAttribute("activeConversation", conversation);
           logger.info("activeConversation创建成功,id:{}", conversation.getId());
         } else {
-          logger.info("activeConversation 已经存在 id:{}", conversations.get(0).getId());
+          logger.info(
+              "activeConversation 已经存在 id:{},label:{}",
+              conversations.get(0).getId(),
+              conversations.get(0).getLabel());
           session.setAttribute("activeConversation", conversations.get(0));
         }
         Conversation conversationSession =
